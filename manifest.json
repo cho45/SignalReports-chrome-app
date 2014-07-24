@@ -1,0 +1,24 @@
+{
+	"name": "SignalReports",
+	"description": "",
+	"version": "0.1",
+	"manifest_version": 2,
+	"minimum_chrome_version": "23",
+	"app": {
+		"background": {
+			"scripts": ["background.js"]
+		}
+	},
+	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAukFnrMJ8lHWcioPp4Yq1WMx2IY+xoo76i391op2ulR/HyUbtPVngGLBCFv7bZl/OAM8R8Kk+D2bU0zU0VS1z4b12wc87LzVqKBK+2oKAGe+VuWHgJUGl9kxLe9iDqGi26ON4oo0yugt32USPFF6feIDIWssIIbHDHqr5/0BJwW3dC6h9MWVbZXpqG5zwv+ExP99mZMxe4ldtYeIkg0bkagKerMr6bX/v6S3A1yl1d8vTkdPU3yIpm3AWUETaQjt2RQHZ41MuRciX7q6pyIbXoRr53/kneK+0MCLZcO4Trbg1tG1Al/N70cdH2ofeJPytSj6uxsF1phdpVkpkeOUqDwIDAQAB",
+	"permissions": [
+		"unlimitedStorage",
+		"storage",
+		{ "fileSystem" : ["write"] },
+		"syncFileSystem",
+		"contextMenus",
+		"identity",
+		"serial"
+	],
+
+	"icons": { "128": "599.png" }
+}

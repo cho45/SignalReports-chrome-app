@@ -1,0 +1,70 @@
+<div id='setting' class="modal" tabindex="-1" ng-show="show">
+	<div class="modal-dialog" style="width: 1000px">
+		<form>
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" ng-click="close()">&times;</button>
+					<h4 class="modal-title">
+						Settings
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-6">
+							<table class="table">
+								<tr>
+									<th colspan="2">Data</th>
+								</tr>
+								<tr>
+									<th>Import</th>
+									<td>
+										<p>Import logs from ADIF format</p>
+										<button class="btn btn-primary" ng-click="importFile()">Import</button>
+									</td>
+								</tr>
+								<tr>
+									<th>Export</th>
+									<td>
+										<p>Export all logs to ADIF format</p>
+										<button class="btn btn-primary" ng-click="exportFile()">Export</button>
+									</td>
+								</tr>
+								<tr>
+									<th>Reset</th>
+									<td>
+										<p>Reset all data</p>
+										<button class="btn btn-danger" ng-click="allReset()">Reset</button>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="col-md-6">
+							<table class="table table-condensed">
+								<tr>
+									<th>Sync</th>
+									<td>
+										<button class="btn btn-primary" ng-click="syncNow()">Sync Now</button> <br/>
+										Last synced: {{ lastSynced  | date : 'yyyy-MM-dd HH:mm' }}
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+					<button type="button" class="btn btn-primary" ng-click="ok()">OK</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<style scoped>
+		.modal {
+			display: block !important;
+		}
+
+		.modal.ng-hide {
+			display: none !important;
+		}
+	</style>
+</div>

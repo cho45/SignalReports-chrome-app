@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html
+	data-production="true"
+	ng-app="signalReportsApp"
+	ng-csp
+	>
+	<head>
+		<title>SignalReports</title>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+		<link rel="stylesheet" type="text/css" href="/assets/bootstrap/css/bootstrap.css" media="screen,tv"/>
+		<link rel="stylesheet" type="text/css" href="/assets/typeaheadjs.css" media="screen,tv"/>
+		<link rel="stylesheet" type="text/css" href="/assets/styles.css" media="screen,tv"/>
+		<link rel="stylesheet" type="text/css" href="/assets/angular-csp.css" media="screen,tv"/>
+
+		<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon"/>
+
+		<script type="text/javascript" src="/assets/jquery-2.1.1.js"></script>
+		<script type="text/javascript" src="/assets/angular.js"></script>
+		<script type="text/javascript" src="/assets/underscore.js"></script>
+		<script type="text/javascript" src="/assets/bootstrap/js/bootstrap.js"></script>
+		<script type="text/javascript" src="/assets/typeahead.bundle.js"></script>
+		<script type="text/javascript" src="/assets/jquery.deserialize.min.js"></script>
+		<script type="text/javascript" src="/assets/strftime.js"></script>
+		<script type="text/javascript" src="/assets/keyString.js"></script>
+		<script type="text/javascript" src="/assets/jquery.textcomplete.js"></script>
+		<script type="text/javascript" src="/assets/adif.js"></script>
+
+		<script type="text/javascript" src="/app.js"></script>
+		<script type="text/javascript" src="/services.js"></script>
+		<script type="text/javascript" src="/directives.js"></script>
+		<script type="text/javascript" src="/filters.js"></script>
+		<script type="text/javascript" src="/controllers.js"></script>
+	</head>
+	<body ng-controller="SignalReportListCtrl">
+		<div class="navbar navbar-inverse navbar-fixed-top" style="-webkit-app-region: drag">
+			<div class="navbar-header">
+				<div class="window-buttons">
+					<div class="glyphicon glyphicon-resize-full" ng-click="resizeToFull()"></div>
+					<div class="glyphicon glyphicon-resize-small" ng-click="resizeToDefault()"></div>
+					<div class="glyphicon glyphicon-remove" ng-click="exitApplication()"></div>
+				</div>
+			</div>
+			<div class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="#new" ng-click="openForm()">New report</a></li>
+					<li><a class="total">Total: {{ total || 0 }}</a></li>
+				</ul>
+				<form class="navbar-form navbar-left" id="search-form" ng-submit="search(true)">
+					<div class="form-group">
+						<input type="search" placeholder="Search" class="form-control input-sm" ng-model="query" ng-keyup="search()">
+					</div>
+				</form>
+				<div class="navbar-left">
+					<a class="navbar-brand" style="color: #fff">Signal Reports</a>
+				</div>
+				<ul class="nav navbar-nav navbar-right" style="padding-right: 20px">
+					<li>
+						<a class="" ng-show="syncing"><span class="glyphicon glyphicon-refresh"></span>{{ syncStatus }} </a>
+					</li>
+					<li>
+						<a href="" ng-click="openSetting()"><span class="glyphicon glyphicon-cog"></span> Setting</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="main" style="padding: 0 0 30px 0">
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr>
+						<th>Call sign</th>
+						<th>Band</th>
+						<th>Frequency</th>
+						<th>Mode</th>
+						<th>Date Time</th>
+						<th>UR RST</th>
+						<th>MY RST</th>
+						<th>Name</th>
+						<th>QTH</th>
+						<th>Memo</th>
+						<th class="location">Location</th>
+						<th class="rig">Rig</th>
+						<th class="tx_power">TX Power</th>
+					</tr>
+				</thead>
+				<tbody id="entries">
+					<tr ng-repeat="report in reports | orderBy:orderProp:true" ng-click="openForm(report)" data-id="{{ report.id }}">
+						<td class="callsign">{{ report.call }}</td>
+						<td class="band">{{ report.band }}</td>
+						<td class="frequency">{{ report.freq | frequency }}</td>
+						<td class="mode"><span class="label label-{{ report.mode | lowercase }} ng-binding">{{ report.mode }}</span></td>
+						<td class="datetime"><time data-epoch="{{ report.datetime }}">{{ report.qso_date }} {{ report.time_on }}</time></td>
+						<td class="rst">{{ report.rst_sent }}</td>
+						<td class="rst">{{ report.rst_rcvd }}</td>
+						<td class="name">{{ report.name_intl }}</td>
+						<td class="address">{{ report.qth_intl }}</td>
+						<td class="memo">{{ report.notes_intl }}</td>
+						<td class="location">{{ report.my_city_intl }}</td>
+						<td class="rig">{{ report.my_rig_intl }}</td>
+						<td class="tx_power">{{ report.tx_pwr }}</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="" style="text-align:center; padding: 0 15px">
+				<a id="more" class="btn btn-default btn-block" ng-click="loadNext()" ng-show="hasMore"><span class="glyphicon glyphicon-chevron-down"></span></a>
+			</div>
+
+		</div>
+
+		<sr-edit-dialog name="EditDialog"></sr-edit-dialog>
+		<sr-setting name="Setting"></sr-setting>
+
+		<sr-dialog name="Alert">
+			<div id="alert-message">{{ message }}</div>
+		</sr-dialog>
+	</body>
+</html>

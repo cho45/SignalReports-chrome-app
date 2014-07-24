@@ -1,0 +1,28 @@
+<div class="modal" tabindex="-1" ng-show="show">
+	<div class="modal-dialog" style="{{ style }}">
+		<form>
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" ng-click="close()">&times;</button>
+					<h4 class="modal-title">
+						{{ title }}
+					</h4>
+				</div>
+				<div class="modal-body" ng-transclude></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" ng-click="cancel()" ng-show="opts.cancelLabel">{{ opts.cancelLabel }}</button>
+					<button type="button" class="btn btn-primary" ng-click="ok()">{{ opts.okLabel }}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<style scoped>
+		.modal {
+			display: block !important;
+		}
+
+		.modal.ng-hide {
+			display: none !important;
+		}
+	</style>
+</div>
