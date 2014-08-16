@@ -2,33 +2,36 @@
 signalReportsApp.directive('srTypeaheadCallsign', function () {
 	return {
 		link : function (scope, element, attrs) {
-//			element.
-//				typeahead({
-//					name : 'callsign',
-//					template: 'callcompl',
-//					engine: {
-//						compile : function (string) {
-//							return {
-//								render : template(string)
-//							};
-//						}
-//					},
-//					remote : '/api/callsign?q=%QUERY'
-//				}).
-//				keydown(function (e) {
-//					var key = keyString(e);
-//					if (key === 'RET') {
-//						element.data('ttView').inputView.trigger('enterKeyed', e);
-//					} else
-//					if (key === 'C-n') {
-//						e.ctrlKey = false;
-//						element.data('ttView').inputView.trigger('downKeyed', e);
-//					} else
-//					if (key === 'C-p') {
-//						e.ctrlKey = false;
-//						element.data('ttView').inputView.trigger('upKeyed', e);
-//					}
-//				});
+			element.typeahead({
+				hint: false,
+				highlight: false,
+				minLength: 1
+			}, {
+				name : 'callsign',
+				source : function (q, cb) {
+					var filtered = CALLSIGN_DATA.filter(function (i) {
+						return i[0].test(q);
+					});
+					cb([ filtered[0]] );
+				},
+				templates : {
+					suggestion : function (obj) {
+						if (obj[2]) {
+							return '<p>#2, <b>#1</b></p>'.replace(/#(\d)/g, function (_, n) {
+								return obj[n];
+							});
+						} else {
+							return '<p>#1</p>'.replace(/#(\d)/g, function (_, n) {
+								return obj[n];
+							});
+						}
+					}
+				}
+			});
+
+			element.focus(function () {
+				element.typeahead('val', element.val());
+			});
 		}
 	};
 });
@@ -167,7 +170,7 @@ signalReportsApp.directive('srDialog', function ($q) {
 	};
 });
 
-signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStorage) {
+signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStorage, Identity, Backup) {
 	return {
 		restrict : 'E',
 		scope :  {
@@ -241,6 +244,9 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 								var time = row.time_on.match(/(\d\d)(\d\d)(\d\d)?/);
 								row.datetime = new Date(+date[1], +date[2]-1, date[3], time[1], time[2], time[3] || 0).getTime();
 								return SignalReportDB.insertReport(row).then(loop);
+							}).
+							then(function () {
+								$scope.$parent.load();
 							});
 						};
 
@@ -253,37 +259,7 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 				console.log('exportFile');
 				var suggestedName = 'signalreports-' + (new Date().strftime('%Y%m%d%H%M%S')) + '.adi';
 				chrome.fileSystem.chooseEntry({ type: 'saveFile', suggestedName : suggestedName }, function (writableFileEntry) {
-					SignalReportDB.dump().then(function (data) {
-						var array = [];
-						for (var key in data) if (data.hasOwnProperty(key)) {
-							if (!data[key]._deleted) {
-								array.push(data[key]);
-							}
-						}
-						array.sort(function (a, b) { return a.datetime - b.datetime });
-
-						var output = [
-							'this data was exported using SignalReports, conforming to ADIF standard specification version 3.0.4\n',
-							'<adif_ver:5>3.0.4\n',
-							'<created_timestamp:9>', (new Date()).strftime('%Y%m%d %H%M%S'), '\n',
-							'<eoh>\n\n'
-						];
-
-						for (var i = 0, it; (it = array[i]); i++) {
-							for (var key in it) if (it.hasOwnProperty(key)) {
-								var val = it[key];
-								var type = ADIF.QSO_FIELDS.typeOf(key);
-								if (!type) continue;
-
-								if (val) {
-									// convert string to utf-8 byte array for calculating byte length
-									var part = new Blob([ val ]);
-									output.push('<', key, ':', part.size, '>', val);
-								}
-							}
-							output.push('<eor>\n');
-						}
-
+					SignalReportDB.exportADI().then(function (blob) {
 						writableFileEntry.createWriter(function(writer) {
 							writer.onerror = function (e) {
 								console.log(e);
@@ -291,7 +267,7 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 							writer.onwriteend = function(e) {
 								console.log('write complete');
 							};
-							writer.write(new Blob(output));
+							writer.write(blob);
 						}, function (e) {
 							console.log(e);
 						});
@@ -301,10 +277,10 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 
 			$scope.allReset = function () {
 				$scope.$parent.Alert.open({
-					okLabel : 'OK',
-					cancelLabel : 'Cancel',
+					okLabel : loc('ok'),
+					cancelLabel : loc('cancel'),
 					stash : {
-						message : 'Sure?'
+						message : loc('confirm_allReset')
 					}
 				}).
 				then(function () {
@@ -319,6 +295,22 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 			$scope.syncNow = function () {
 				$scope.$parent.sync();
 			};
+
+			$scope.setupBackup = function () {
+				Identity.getAuthToken({ 'interactive': true }).then(function (token) {
+					Backup.enable();
+					Backup.queue();
+				});
+			};
+
+			$scope.disableBackup = function () {
+				Identity.revoke();
+				Backup.disable();
+			};
+
+			Identity.getAuthToken({ interactive : false }).then(function (token) {
+				$scope.backupEnabled = true;
+			});
 		}
 	};
 });
@@ -496,10 +488,10 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports) {
 				if ( ($scope.opts.close || function () {})() === false) return;
 				if ($scope.formChanged) {
 					$scope.$parent.Alert.open({
-						okLabel : 'OK',
-						cancelLabel : 'Cancel',
+						okLabel : loc('ok'),
+						cancelLabel : loc('cancel'),
 						stash : {
-							message : 'Sure?'
+							message : loc('confirm_unsaved')
 						}
 					}).
 					then(function () {
@@ -532,10 +524,10 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports) {
 
 			$scope.deleteReport = function () {
 				$scope.$parent.Alert.open({
-					okLabel : 'OK',
-					cancelLabel : 'Cancel',
+					okLabel : loc('ok'),
+					cancelLabel : loc('cance'),
 					stash : {
-						message : 'Sure?'
+						message : loc('confirm_deleteReport')
 					}
 				}).
 				then(function () {

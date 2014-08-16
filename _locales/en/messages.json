@@ -1,0 +1,103 @@
+{
+	"newReport": {
+		"message": "New Report"
+	},
+	"total": {
+		"message": "Total: $count$",
+		"placeholders" : {
+			"count" : {
+				"content": "$1"
+			}
+		}
+	},
+	"setting": {
+		"message": "Setting"
+	},
+	"ok": {
+		"message": "OK"
+	},
+	"cancel": {
+		"message": "Cancel"
+	},
+	"data": {
+		"message": "Data"
+	},
+	"import": {
+		"message": "Import"
+	},
+	"import_desc": {
+		"message": "Import logs from ADIF (.adi)"
+	},
+	"export": {
+		"message": "Export"
+	},
+	"export_desc": {
+		"message": "Export logs to ADIF (.adi)"
+	},
+	"reset": {
+		"message": "Rest"
+	},
+	"reset_desc": {
+		"message": "Delete all data"
+	},
+	"sync": {
+		"message": "Sync"
+	},
+	"syncNow": {
+		"message": "Sync Now"
+	},
+	"lastSynced": {
+		"message": "Last synced at $datetime$",
+		"placeholders" : {
+			"datetime" : {
+				"content": "$1"
+			}
+		}
+	},
+	"confirm_allReset": {
+		"message": "Sure to delete all data?"
+	},
+	"confirm_unsaved": {
+		"message": "Sure to close unsaved data?"
+	},
+	"confirm_deleteReport": {
+		"message": "Sure to delete this log?"
+	},
+	"delete" : {
+		"message": "Delete"
+	},
+	"unsaved" : {
+		"message": "Unsaved"
+	},
+	"save" : {
+		"message": "Save"
+	},
+	"backuping" : {
+		"message": "Backuping…"
+	},
+	"setupBackup" : {
+		"message": "Setup Backup"
+	},
+	"disableBackup" : {
+		"message": "Disable Backup"
+	},
+	"lastBackuped": {
+		"message": "Last backuped at $datetime$",
+		"placeholders" : {
+			"datetime" : {
+				"content": "$1"
+			}
+		}
+	},
+	"backup" : {
+		"message": "Backup"
+	},
+	"appName": {
+		"message": "SignalReports",
+		"description": "The title of the application, displayed in the web store."
+	},
+	"appDesc": {
+		"message": "Ham Radio Logger", 
+		"description":"The description of the application, displayed in the web store."
+	}
+}

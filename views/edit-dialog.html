@@ -11,13 +11,13 @@
 						<small>
 							<span class="backup" ng-show="inputBackup">Backup exists {{ inputBackup.date | date: 'yyyy-MM-dd HH:mm' }} <a ng-click="restoreBackup()">Restore</a></span>
 						</small>
-						<input type="button" class="btn btn-danger btn-xs" id="delete" value="Delete" ng-click="deleteReport()" ng-hide="isNew"/>
+						<input type="button" class="btn btn-danger btn-xs" id="delete" value="{{ 'delete' | loc }}" ng-click="deleteReport()" ng-hide="isNew"/>
 
 						<span class="" ng-show="formChanged">
-							Unsaved
+							{{ 'unsaved' | loc }}
 						</span>
 						<span class="" ng-show="savingBackup">
-							Backup...
+							{{ 'backuping' | loc }}
 						</span>
 					</h4>
 				</div>
@@ -204,7 +204,7 @@
 				</div>
 				<div class="modal-footer">
 					<input type="hidden" name="id" value=""/>
-					<input type="submit" class="btn btn-primary" value="Save changes"/>
+					<input type="submit" class="btn btn-primary" value="{{ 'save' | loc }}"/>
 				</div>
 			</form>
 		</div><!-- /.modal-content -->

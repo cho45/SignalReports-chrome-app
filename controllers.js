@@ -1,4 +1,12 @@
-signalReportsApp.controller('SignalReportListCtrl', function ($scope, $q, $http, $timeout, $interval, $document, Reports, SignalReportDB, CATSocketService, temporaryStorage) {
+signalReportsApp.controller('SignalReportListCtrl', function ($scope, $q, $http, $timeout, $interval, $document, Reports, SignalReportDB, CATSocketService, temporaryStorage, Backup) {
+	Backup.init();
+	Backup.addListener('status', function (status) {
+		console.log('update backup status', status);
+		$scope.backupEnabled = status.enabled;
+		$scope.lastBackuped = status.lastBackuped;
+	});
+
+
 	$scope.search = function me (immediate) {
 		if (me.timer) $timeout.cancel(me.timer);
 

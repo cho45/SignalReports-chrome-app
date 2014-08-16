@@ -10,10 +10,16 @@ var ADIF = {
 		while (string.length) {
 			if ( (match = /^[^<]*<(\w+):(\d+)(?::([^>]+))?>/.exec(string)) ) {
 				string = string.substring(match[0].length);
-				var field = match[1].toLowerCase(), length = parseInt(match[2], 10), type = match[3];
-				var data  = string.substring(0, length);
-				string = string.substring(length);
-				// console.log([match[0].length, field, length, type, data]);
+				var field = match[1].toLowerCase(), byteLength = parseInt(match[2], 10), type = match[3];
+				for (var charLength = 1; charLength < byteLength; charLength++) {
+					var str = string.substring(0, charLength);
+					var subByteLength = encodeURIComponent(str).match(/%..|./g).length;
+					if (byteLength === subByteLength) {
+						break;
+					}
+				}
+				var data  = string.substring(0, charLength);
+				string = string.substring(charLength);
 				current[ field ] = data;
 			} else
 			if ( (match = /^[^<]*<eoh>[^<]*/i.exec(string)) ) {

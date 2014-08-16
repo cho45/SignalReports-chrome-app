@@ -1,0 +1,102 @@
+{
+	"newReport": {
+		"message": "新規レポート"
+	},
+	"total": {
+		"message": "トータル $count$",
+		"placeholders" : {
+			"count" : {
+				"content": "$1"
+			}
+		}
+	},
+	"setting": {
+		"message": "設定"
+	},
+	"ok": {
+		"message": "OK"
+	},
+	"cancel": {
+		"message": "キャンセル"
+	},
+	"data": {
+		"message": "データ"
+	},
+	"import": {
+		"message": "インポート"
+	},
+	"import_desc": {
+		"message": "ADIF ファイルからログをインポートします"
+	},
+	"export": {
+		"message": "エクスポート"
+	},
+	"export_desc": {
+		"message": "ADIF ファイルにログをエクスポートします"
+	},
+	"reset": {
+		"message": "リセット"
+	},
+	"reset_desc": {
+		"message": "データを完全に削除します"
+	},
+	"sync": {
+		"message": "同期"
+	},
+	"syncNow": {
+		"message": "今すぐ同期"
+	},
+	"lastSynced": {
+		"message": "最後に同期された時刻: $datetime$",
+		"placeholders" : {
+			"datetime" : {
+				"content": "$1"
+			}
+		}
+	},
+	"confirm_allReset": {
+		"message": "本当に全データを削除しますか?"
+	},
+	"confirm_unsaved": {
+		"message": "保存せずに閉じますか?"
+	},
+	"confirm_deleteReport": {
+		"message": "本当に削除しますか?"
+	},
+	"delete" : {
+		"message": "削除"
+	},
+	"unsaved" : {
+		"message": "未保存"
+	},
+	"save" : {
+		"message": "保存"
+	},
+	"backuping" : {
+		"message": "バックアップ中…"
+	},
+	"setupBackup" : {
+		"message": "バックアップをセットアップ"
+	},
+	"disableBackup" : {
+		"message": "バックアップを無効化"
+	},
+	"lastBackuped": {
+		"message": "最後にバックアップされた日: $datetime$",
+		"placeholders" : {
+			"datetime" : {
+				"content": "$1"
+			}
+		}
+	},
+	"backup" : {
+		"message": "バックアップ"
+	},
+	"appName": {
+		"message": "SignalReports"
+	},
+	"appDesc": {
+		"message": "アマチュア無線用ログツール"
+	}
+}
+

@@ -5,7 +5,7 @@
 				<div class="modal-header">
 					<button type="button" class="close" ng-click="close()">&times;</button>
 					<h4 class="modal-title">
-						Settings
+						{{ 'setting' | loc }}
 					</h4>
 				</div>
 				<div class="modal-body">
@@ -13,27 +13,27 @@
 						<div class="col-md-6">
 							<table class="table">
 								<tr>
-									<th colspan="2">Data</th>
+									<th colspan="2">{{ 'data' | loc }}</th>
 								</tr>
 								<tr>
-									<th>Import</th>
+									<th>{{ 'import' | loc }}</th>
 									<td>
-										<p>Import logs from ADIF format</p>
-										<button class="btn btn-primary" ng-click="importFile()">Import</button>
+										<p>{{ 'import_desc' | loc }}</p>
+										<button class="btn btn-primary" ng-click="importFile()">{{ 'import' | loc }}</button>
 									</td>
 								</tr>
 								<tr>
-									<th>Export</th>
+									<th>{{ 'export' | loc }}</th>
 									<td>
-										<p>Export all logs to ADIF format</p>
-										<button class="btn btn-primary" ng-click="exportFile()">Export</button>
+										<p>{{ 'export_desc' | loc }}</p>
+										<button class="btn btn-primary" ng-click="exportFile()">{{ 'export' | loc }}</button>
 									</td>
 								</tr>
 								<tr>
-									<th>Reset</th>
+									<th>{{ 'reset' | loc }}</th>
 									<td>
-										<p>Reset all data</p>
-										<button class="btn btn-danger" ng-click="allReset()">Reset</button>
+										<p>{{ 'reset_desc' | loc }}</p>
+										<button class="btn btn-danger" ng-click="allReset()">{{ 'reset' | loc }}</button>
 									</td>
 								</tr>
 							</table>
@@ -41,10 +41,18 @@
 						<div class="col-md-6">
 							<table class="table table-condensed">
 								<tr>
-									<th>Sync</th>
+									<th>{{ 'backup' | loc }}</th>
 									<td>
-										<button class="btn btn-primary" ng-click="syncNow()">Sync Now</button> <br/>
-										Last synced: {{ lastSynced  | date : 'yyyy-MM-dd HH:mm' }}
+										<button class="btn btn-primary" ng-click="setupBackup()" ng-show="!$parent.backupEnabled">{{ 'setupBackup' | loc }}</button> <br/>
+										<button class="btn btn-primary" ng-click="disableBackup()" ng-show="$parent.backupEnabled">{{ 'disableBackup' | loc }}</button> <br/>
+										{{ 'lastBackuped' | loc: ($parent.lastBackuped  | date : 'yyyy-MM-dd HH:mm') }}
+									</td>
+								</tr>
+								<tr>
+									<th>{{ 'sync' | loc }}</th>
+									<td>
+										<button class="btn btn-primary" ng-click="syncNow()">{{ 'syncNow' | loc }}</button> <br/>
+										{{ 'lastSynced' | loc: (lastSynced  | date : 'yyyy-MM-dd HH:mm') }}
 									</td>
 								</tr>
 							</table>
@@ -52,8 +60,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
-					<button type="button" class="btn btn-primary" ng-click="ok()">OK</button>
+					<button type="button" class="btn btn-default" ng-click="cancel()">{{ 'cancel' | loc }}</button>
+					<button type="button" class="btn btn-primary" ng-click="ok()">{{ 'ok' | loc }}</button>
 				</div>
 			</div>
 		</form>

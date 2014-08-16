@@ -1,16 +1,17 @@
 {
-	"name": "SignalReports",
-	"description": "",
+	"name": "__MSG_appName__",
+	"description": "__MSG_appDesc__",
+	"default_locale" : "en",
 	"version": "0.1",
 	"manifest_version": 2,
-	"minimum_chrome_version": "23",
+	"minimum_chrome_version": "30",
 	"app": {
 		"background": {
 			"scripts": ["background.js"]
 		}
 	},
-	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAukFnrMJ8lHWcioPp4Yq1WMx2IY+xoo76i391op2ulR/HyUbtPVngGLBCFv7bZl/OAM8R8Kk+D2bU0zU0VS1z4b12wc87LzVqKBK+2oKAGe+VuWHgJUGl9kxLe9iDqGi26ON4oo0yugt32USPFF6feIDIWssIIbHDHqr5/0BJwW3dC6h9MWVbZXpqG5zwv+ExP99mZMxe4ldtYeIkg0bkagKerMr6bX/v6S3A1yl1d8vTkdPU3yIpm3AWUETaQjt2RQHZ41MuRciX7q6pyIbXoRr53/kneK+0MCLZcO4Trbg1tG1Al/N70cdH2ofeJPytSj6uxsF1phdpVkpkeOUqDwIDAQAB",
 	"permissions": [
+		"https://www.googleapis.com/",
 		"unlimitedStorage",
 		"storage",
 		{ "fileSystem" : ["write"] },
@@ -19,6 +20,13 @@
 		"identity",
 		"serial"
 	],
+	"oauth2": {
+		"client_id": "516510689609-6envt5tmc4erin5vpovcsbkknmlt0975.apps.googleusercontent.com",
+		"scopes": [
+			"https://www.googleapis.com/auth/drive"
+		]
+	},
+	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApuSuUN8ROPt6d/EwBHbjD/WzehPf5T+JBJGmVbfBJKabVJQUEbByvecMlm6YYWM9A6j15IwtuS2vOjXLgnV/7gtq8qK3uPIgVAftLFmnu63Sk52UzPeKXwN43nPjkQq6o2FvxIakkQRBeTXCNjVRA7wJ40OasfZEYl+QmlNoQAYb+R/5pKxZ2Tn5jvlfEBtX5dWih8SA1D3pKNJdhSOAPwKhbnOyJ8LyWNaEo2MQ9K6SOA943l/n4a8U8roxDFL9wcwU0lFEDufSJpwSBWf+CW6CqmVjpHzRBSv+vdZ/bFr1sTDIPJABjgxF0MCyQHPn3Z5hsX0/kXu4bkd6zQv/kwIDAQAB",
 
 	"icons": { "128": "599.png" }
 }

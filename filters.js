@@ -5,3 +5,6 @@ signalReportsApp.filter('frequency', function () {
 });
 
 
+signalReportsApp.filter('loc', function () {
+	return loc;
+});
