@@ -99,5 +99,7 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
   #input-form .rst-container .rst-dropdown table tr th {
     width: 100px;
     padding: 5px; }
+#input-form .typeahead-call-dropdown {
+  width: 500px; }
 
 /*# sourceMappingURL=styles.css.map */

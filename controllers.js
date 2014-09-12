@@ -102,7 +102,7 @@ signalReportsApp.controller('SignalReportListCtrl', function ($scope, $q, $http,
 				});
 				$scope.total--;
 			}
-			$scope.sync();
+			// $scope.sync();
 		});
 	};
 

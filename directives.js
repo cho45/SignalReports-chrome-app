@@ -1,5 +1,5 @@
 
-signalReportsApp.directive('srTypeaheadCallsign', function () {
+signalReportsApp.directive('srTypeaheadCallsign', function (SignalReportDB) {
 	return {
 		link : function (scope, element, attrs) {
 			element.typeahead({
@@ -12,16 +12,33 @@ signalReportsApp.directive('srTypeaheadCallsign', function () {
 					var filtered = CALLSIGN_DATA.filter(function (i) {
 						return i[0].test(q);
 					});
-					cb([ filtered[0]] );
+					SignalReportDB.open().then(function () {
+						SignalReportDB.query({ call : q.toUpperCase() }, { limit : 5 }).then(function (result) {
+							console.log('call query', result);
+							if (filtered.length) {
+								result.push(filtered[0]);
+							}
+							cb(result);
+						});
+					});
+				},
+				displayKey: function (i) {
+					return i.call;
 				},
 				templates : {
 					suggestion : function (obj) {
-						if (obj[2]) {
-							return '<p>#2, <b>#1</b></p>'.replace(/#(\d)/g, function (_, n) {
-								return obj[n];
-							});
+						if (obj instanceof Array) {
+							if (obj[2]) {
+								return '<p class="typeahead-call-dropdown">#2, <b>#1</b></p>'.replace(/#(\d)/g, function (_, n) {
+									return obj[n];
+								});
+							} else {
+								return '<p class="typeahead-call-dropdown">#1</p>'.replace(/#(\d)/g, function (_, n) {
+									return obj[n];
+								});
+							}
 						} else {
-							return '<p>#1</p>'.replace(/#(\d)/g, function (_, n) {
+							return '<p class="typeahead-call-dropdown">#{call} : #{qso_date} #{band} #{mode}</p>'.replace(/#\{([^}]+)\}/g, function (_, n) {
 								return obj[n];
 							});
 						}
@@ -189,6 +206,11 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 		},
 		templateUrl : '/views/setting.html',
 		controller : function ($scope, $q) {
+			Identity.getProfileUserInfo().then(function (userInfo) {
+				console.log('userInfo', userInfo);
+				$scope.userInfo = userInfo;
+			});
+
 			$scope.SettingDialog = {
 				open : function (opts) {
 					console.log('open', opts);
@@ -315,7 +337,7 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 	};
 });
 
-signalReportsApp.directive('srEditDialog', function ($document, Reports) {
+signalReportsApp.directive('srEditDialog', function ($document, Reports, SignalReportDB) {
 	return {
 		restrict : 'E',
 		scope :  {
@@ -353,21 +375,17 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports) {
 					blur(function () {
 						var $this = $(this);
 
-//						$.ajax({
-//							url: "/api/callsign",
-//							type : "GET",
-//							data : { q : $this.val() },
-//							dataType: 'json'
-//						}).
-//						done(function (data) {
-//							if (data.length && data[0].value === $this.val()) {
-//								if (!scope.editingReport.name) scope.editingReport.name = data[0].name || '';
-//								if (!scope.editingReport.address) scope.editingReport.address = data[0].address || data[0].country || '';
-//								scope.$apply();
-//							}
-//						}).
-//						fail(function (e) {
-//						});
+						SignalReportDB.open().then(function () {
+							SignalReportDB.query({ call : $this.val().toUpperCase() }, { limit : 5 }).then(function (result) {
+								var data = result.sort(function (a, b) { return b.datetime - a.datetime }).filter(function (i) {  return i.call == $this.val().toUpperCase() })[0];
+								if (data) {
+									$scope.$evalAsync(function () {
+										if (!$scope.report.name_intl) $scope.report.name_intl = data.name_intl;
+										if (!$scope.report.qth_intl) $scope.report.qth_intl = data.qth_intl;
+									});
+								}
+							});
+						});
 					}).
 				end().
 				find('input[name=rst_sent], input[name=rst_rcvd]').
@@ -376,9 +394,6 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports) {
 					}).
 					blur(function () {
 						$(this).parent().find('.rst-dropdown').hide();
-						if ($(this).val() && !inputFormForm.find('input[name=time]').val()) {
-							$('#now').click();
-						}
 					}).
 					keyup(function () {
 						$(this).change();
@@ -390,6 +405,13 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports) {
 						$this.parent().find('tr.readability td').text( (rst[0] || '') + ' ' + (signalReportsApp.Utils.RST.R[rst[0] - 1] || '') );
 						$this.parent().find('tr.strength td').text( (rst[1] || '') + ' ' + (signalReportsApp.Utils.RST.S[rst[1] - 1] || '') );
 						$this.parent().find('tr.tone td').text( (rst[2] || '') + ' ' + (signalReportsApp.Utils.RST.T[rst[2] - 1] || '') );
+					}).
+				end().
+				find('input[name=rst_rcvd]').
+					blur(function () {
+						if ($(this).val() && !inputFormForm.find('input[name=time]').val()) {
+							$('#now').click();
+						}
 					}).
 				end()
 				;
@@ -540,6 +562,10 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports) {
 						});
 					});
 				});
+			};
+
+			$scope.openBrowser = function (url) {
+				window.open(url);
 			};
 
 

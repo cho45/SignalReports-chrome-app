@@ -48,11 +48,22 @@
 										{{ 'lastBackuped' | loc: ($parent.lastBackuped  | date : 'yyyy-MM-dd HH:mm') }}
 									</td>
 								</tr>
-								<tr>
+								<!-- tr>
 									<th>{{ 'sync' | loc }}</th>
 									<td>
 										<button class="btn btn-primary" ng-click="syncNow()">{{ 'syncNow' | loc }}</button> <br/>
 										{{ 'lastSynced' | loc: (lastSynced  | date : 'yyyy-MM-dd HH:mm') }}
+									</td>
+								</tr -->
+								<tr>
+									<th>{{ 'account' | loc }}</th>
+									<td>
+										<span ng-if="userInfo.email">
+											{{ userInfo.email }}
+										</span>
+										<span ng-if="!userInfo.email">
+											{{ 'notSignedIn' | loc }}
+										</span>
 									</td>
 								</tr>
 							</table>

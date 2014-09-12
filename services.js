@@ -90,6 +90,7 @@ signalReportsApp.factory('SignalReportDB', function ($rootScope, $q, temporarySt
 		query : function (query, opts) {
 			var self = this;
 			var ret = $q.defer();
+			if (!opts) opts = {};
 
 			var txn = self.db.transaction(['reports'], 'readonly');
 			var store = txn.objectStore('reports');
@@ -98,7 +99,9 @@ signalReportsApp.factory('SignalReportDB', function ($rootScope, $q, temporarySt
 			var limit = opts.limit || 50;
 
 			if (query.call) {
-				request = store.index('by_call').openCursor(IDBKeyRange.only(String(query.call)));
+				query.call = String(query.call);
+				// request = store.index('by_call').openCursor(IDBKeyRange.only(String(query.call)));
+				request = store.index('by_call').openCursor(IDBKeyRange.bound(query.call, query.call + '\uffff', false, false));
 			} else
 			if (query.datetime) {
 				request = store.openCursor(IDBKeyRange.lowerBound(query.datetime), 'prev');
@@ -262,111 +265,111 @@ signalReportsApp.factory('SignalReportDB', function ($rootScope, $q, temporarySt
 			self.dispatchEvent('syncStatusChange', { status : 'started' });
 
 			var ret = $q.defer();
-			chrome.syncFileSystem.setConflictResolutionPolicy('last_write_win');
-			chrome.syncFileSystem.requestFileSystem(function (fs) {
-				if (chrome.runtime.lastError) {
-					ret.reject(chrome.runtime.lastError.message);
-					return;
-				}
-				fs.root.getFile(
-					'signalreports.txt',
-					{ create: true },
-					function (entry) {
-						var syncedData = $q.defer();
-						ret.notify("Reading file...");
-						entry.file(function (file) {
-							var reader = new FileReader();
-							reader.onerror = self.errorHandler(syncedData);
-							reader.onloadend = function (e) {
-								console.log('onloadend', e.target.result);
-								var data = {};
-								if (e.target.result) {
-									var array = JSON.parse(e.target.result);
-									for (var i = 0, it; (it = array[i]); i++) {
-										data[ it.datetime ] = it;
-									}
-								}
-								syncedData.resolve(data);
-							};
-							reader.readAsText(file);
-						});
-
-						$q.all({
-							synced : syncedData.promise,
-							local  : self.dump()
-						}).
-						then(function syncRemoteToLocal (data) {
-							var synced = data.synced, local = data.local;
-							console.log(data);
-
-							ret.notify("Update local database with remote database");
-
-							var deferred = $q.defer();
-
-							var txn = self.db.transaction(['reports'], 'readwrite');
-							var store = txn.objectStore('reports');
-
-							var count = 0;
-							for (var key in synced) if (synced.hasOwnProperty(key)) {
-								if (!local[key] || local[key].updated_at < synced[key].updated_at) {
-									console.log('will be updated on local: ', synced[key]);
-									count++;
-									store.put(synced[key]).onerror = self.errorHandler(deferred);
-								}
-							}
-
-							txn.onerror = self.errorHandler(deferred);
-
-							txn.oncomplete = function () {
-								console.log('updated ', count, ' rows');
-								deferred.resolve(data);
-							};
-
-							return deferred.promise;
-						}).
-						then(function syncLocalToRemote (data) {
-							var synced = data.synced, local = data.local;
-
-							ret.notify("Update remote database with local database");
-
-							var count = 0;
-							for (var key in local) if (local.hasOwnProperty(key)) {
-								if (!synced[key] || synced[key].updated_at < local[key].updated_at) {
-									console.log('will be updated on remote: ', local[key]);
-									count++;
-									synced[key] = local[key];
-								}
-							}
-							console.log('writing ', count, ' new rows');
-
-							var array = [];
-							for (var key in synced) if (synced.hasOwnProperty(key)) {
-								array.push(synced[key]);
-							}
-
-							array.sort(function (a, b) {
-								return a.datetime - b.datetime;
-							});
-
-							entry.createWriter(function (writer) {
-								writer.onerror = self.errorHandler(ret);
-								writer.onwriteend = function () {
-									console.log('done dump');
-									temporaryStorage.set({ lastSynced: new Date().getTime() }).then(function () {
-										self.dispatchEvent('syncStatusChange', { status : 'done' });
-										ret.resolve();
-									}, self.errorHandler(ret));
-								};
-
-								writer.write(new Blob([ JSON.stringify(array) ]));
-							});
-						});
-					},
-					function (e) {
-						ret.reject(e);
-					}
-				);
-			});
+//			chrome.syncFileSystem.setConflictResolutionPolicy('last_write_win');
+//			chrome.syncFileSystem.requestFileSystem(function (fs) {
+//				if (chrome.runtime.lastError) {
+//					ret.reject(chrome.runtime.lastError.message);
+//					return;
+//				}
+//				fs.root.getFile(
+//					'signalreports.txt',
+//					{ create: true },
+//					function (entry) {
+//						var syncedData = $q.defer();
+//						ret.notify("Reading file...");
+//						entry.file(function (file) {
+//							var reader = new FileReader();
+//							reader.onerror = self.errorHandler(syncedData);
+//							reader.onloadend = function (e) {
+//								console.log('onloadend', e.target.result);
+//								var data = {};
+//								if (e.target.result) {
+//									var array = JSON.parse(e.target.result);
+//									for (var i = 0, it; (it = array[i]); i++) {
+//										data[ it.datetime ] = it;
+//									}
+//								}
+//								syncedData.resolve(data);
+//							};
+//							reader.readAsText(file);
+//						});
+//
+//						$q.all({
+//							synced : syncedData.promise,
+//							local  : self.dump()
+//						}).
+//						then(function syncRemoteToLocal (data) {
+//							var synced = data.synced, local = data.local;
+//							console.log(data);
+//
+//							ret.notify("Update local database with remote database");
+//
+//							var deferred = $q.defer();
+//
+//							var txn = self.db.transaction(['reports'], 'readwrite');
+//							var store = txn.objectStore('reports');
+//
+//							var count = 0;
+//							for (var key in synced) if (synced.hasOwnProperty(key)) {
+//								if (!local[key] || local[key].updated_at < synced[key].updated_at) {
+//									console.log('will be updated on local: ', synced[key]);
+//									count++;
+//									store.put(synced[key]).onerror = self.errorHandler(deferred);
+//								}
+//							}
+//
+//							txn.onerror = self.errorHandler(deferred);
+//
+//							txn.oncomplete = function () {
+//								console.log('updated ', count, ' rows');
+//								deferred.resolve(data);
+//							};
+//
+//							return deferred.promise;
+//						}).
+//						then(function syncLocalToRemote (data) {
+//							var synced = data.synced, local = data.local;
+//
+//							ret.notify("Update remote database with local database");
+//
+//							var count = 0;
+//							for (var key in local) if (local.hasOwnProperty(key)) {
+//								if (!synced[key] || synced[key].updated_at < local[key].updated_at) {
+//									console.log('will be updated on remote: ', local[key]);
+//									count++;
+//									synced[key] = local[key];
+//								}
+//							}
+//							console.log('writing ', count, ' new rows');
+//
+//							var array = [];
+//							for (var key in synced) if (synced.hasOwnProperty(key)) {
+//								array.push(synced[key]);
+//							}
+//
+//							array.sort(function (a, b) {
+//								return a.datetime - b.datetime;
+//							});
+//
+//							entry.createWriter(function (writer) {
+//								writer.onerror = self.errorHandler(ret);
+//								writer.onwriteend = function () {
+//									console.log('done dump');
+//									temporaryStorage.set({ lastSynced: new Date().getTime() }).then(function () {
+//										self.dispatchEvent('syncStatusChange', { status : 'done' });
+//										ret.resolve();
+//									}, self.errorHandler(ret));
+//								};
+//
+//								writer.write(new Blob([ JSON.stringify(array) ]));
+//							});
+//						});
+//					},
+//					function (e) {
+//						ret.reject(e);
+//					}
+//				);
+//			});
 			return ret.promise;
 		},
 
@@ -422,6 +425,8 @@ signalReportsApp.service('Backup', function ($q, temporaryStorage, SignalReportD
 			self.initListener();
 			temporaryStorage.get('backup').then(function (data) {
 				console.log('get backup status', data.backup);
+				if (!data.backup) data.backup = {};
+
 				self.lastBackuped = data.backup.lastBackuped;
 				if (data.backup.enabled) {
 					self.enable();
@@ -738,6 +743,14 @@ signalReportsApp.factory('Identity', function ($q, $http) {
 				}
 				Identity.token = token;
 				ret.resolve(token);
+			});
+			return ret.promise;
+		},
+
+		getProfileUserInfo : function (opts) {
+			var ret = $q.defer();
+			chrome.identity.getProfileUserInfo(function (userInfo) {
+				ret.resolve(userInfo);
 			});
 			return ret.promise;
 		},

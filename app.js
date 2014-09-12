@@ -4,7 +4,7 @@ var loc = function (msgid, args) {
 	return chrome.i18n.getMessage(args.shift(), args) || '[' + msgid + ']';
 };
 
-var signalReportsApp = angular.module('signalReportsApp', []);
+var signalReportsApp = angular.module('signalReportsApp', ['ui.bootstrap']);
 
 signalReportsApp.Utils = {
 	RST : {

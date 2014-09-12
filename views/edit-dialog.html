@@ -70,21 +70,14 @@
 					<div class="row">
 						<div class="col-xs-2">
 							<div class="input-group input-group-sm">
-								<span class="input-group-addon">
-									Call
-								</span>
+								<div class="input-group-btn" dropdown>
+									<button type="button" class="btn btn-default dropdown-toggle">Call <span class="caret"></span></button>
+									<ul class="dropdown-menu" role="menu">
+										<li><a href ng-click="openBrowser('http://qrz.com/db/' + report.call)" dropdown-toggle>QRZ.COM</a></li>
+										<li><a href ng-click="openBrowser('http://google.com/search?q=' + report.call)" dropdown-toggle>Search by Google</a></li>
+									</ul>
+								</div><!-- /btn-group -->
 								<input type="text" size="10" name="call" class="form-control input-sm" required ng-model="report.call" sr-typeahead-callsign sr-force-uppercase/>
-								<script type="application/x-template" id="callcompl">
-									<p style="width: 400px">
-									[% if (this.stash.count) { %]
-									<strong>[%= value %]</strong> ([%= count %])<br/>
-									[%= name %] [%= address %] ([%= country %])
-									[% } else { %]
-									<strong>[%= country %]</strong><br/>
-									[%= area %]
-									[% } %]
-									</p>
-								</script>
 							</div>
 						</div>
 						<div class="col-xs-2">
