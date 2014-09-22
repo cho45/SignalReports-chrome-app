@@ -98,13 +98,15 @@ signalReportsApp.factory('SignalReportDB', function ($rootScope, $q, temporarySt
 			var array = [];
 			var limit = opts.limit || 50;
 
+			console.log(['query', query, opts]);
+
 			if (query.call) {
 				query.call = String(query.call);
 				// request = store.index('by_call').openCursor(IDBKeyRange.only(String(query.call)));
 				request = store.index('by_call').openCursor(IDBKeyRange.bound(query.call, query.call + '\uffff', false, false));
 			} else
-			if (query.datetime) {
-				request = store.openCursor(IDBKeyRange.lowerBound(query.datetime), 'prev');
+			if (query.before) {
+				request = store.openCursor(IDBKeyRange.upperBound(query.before, true), 'prev');
 			} else {
 				request = store.openCursor(null, 'prev');
 			}
@@ -116,6 +118,8 @@ signalReportsApp.factory('SignalReportDB', function ($rootScope, $q, temporarySt
 						array.push(cursor.value);
 						if (limit-- > 0) {
 							cursor.continue(); // no warnings
+						} else {
+							ret.resolve(array);
 						}
 					} else {
 						cursor.continue(); // no warnings
@@ -703,7 +707,7 @@ signalReportsApp.factory('Reports', function ($q, SignalReportDB) {
 		var ret = [];
 		db.then(function () {
 			SignalReportDB.query({
-				datetime: query.before
+				before: query.before
 			}, {
 				limit : 51
 			}).
