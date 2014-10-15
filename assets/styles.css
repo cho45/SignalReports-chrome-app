@@ -51,24 +51,33 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
 .label-rtty {
   background-color: #f0ad4e; }
 
-#entries .callsign {
-  width: 7em; }
-#entries .frequency {
-  text-align: right;
-  width: 7em; }
-#entries .mode {
-  text-align: center;
-  width: 3em; }
-#entries .datetime {
-  text-align: center;
-  width: 10em; }
-#entries .rst {
-  text-align: center;
-  width: 5em; }
-#entries .name {
-  width: 7em; }
-#entries .address {
-  width: 10em; }
+#entries {
+  table-layout: fixed; }
+  #entries td, #entries th {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; }
+  #entries .callsign {
+    width: 9em; }
+  #entries .frequency {
+    text-align: right;
+    width: 7em; }
+  #entries .band {
+    width: 4em;
+    text-align: right; }
+  #entries .mode {
+    text-align: center;
+    width: 4em; }
+  #entries .datetime {
+    text-align: center;
+    width: 10em; }
+  #entries .rst {
+    text-align: center;
+    width: 5em; }
+  #entries .address {
+    width: 10em; }
+  #entries .tx_power {
+    width: 4em; }
 
 #input-form .rst-container .tone {
   display: none; }

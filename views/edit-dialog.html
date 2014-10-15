@@ -55,7 +55,7 @@
 								<span class="input-group-addon">
 									Rig
 								</span>
-								<input type="text" size="3" name="my_rig_intl" class="form-control input-sm" value="" ng-model="report.my_rig_intl"/>
+								<input type="text" size="3" name="my_rig_intl" class="form-control input-sm" value="" ng-model="report.my_rig_intl" sr-typeahead-history="my_rig_intl"/>
 							</div>
 						</div>
 						<div class="col-xs-2">
@@ -85,7 +85,7 @@
 								<span class="input-group-addon">
 									UR RST
 								</span>
-								<input type="text" size="3" name="rst_sent" class="form-control input-sm" value="" placeholder="599" required ng-model="report.rst_sent"/>
+								<input type="text" size="3" name="rst_sent" class="form-control input-sm" value="" placeholder="" required ng-model="report.rst_sent"/>
 								<span class="rst-container">
 									<div class="rst-dropdown dropdown-menu">
 										<table>
@@ -111,7 +111,7 @@
 								<span class="input-group-addon">
 									MY RST
 								</span>
-								<input type="text" size="3" name="rst_rcvd" class="form-control input-sm" value="" placeholder="599" required ng-model="report.rst_rcvd"/>
+								<input type="text" size="3" name="rst_rcvd" class="form-control input-sm" value="" placeholder="" required ng-model="report.rst_rcvd"/>
 								<span class="rst-container">
 									<div class="rst-dropdown dropdown-menu">
 										<table>
@@ -166,7 +166,7 @@
 								<span class="input-group-addon">
 									QTH
 								</span>
-								<input type="text" size="10" name="qth_intl" class="form-control input-sm" ng-model="report.qth_intl"/>
+								<input type="text" size="10" name="qth_intl" class="form-control input-sm" ng-model="report.qth_intl" sr-complete-jcc/>
 							</div>
 						</div>
 					</div>
@@ -183,13 +183,23 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-xs-12">
+						<div class="col-xs-9">
 							<div class="input-group input-group-sm">
 								<span class="input-group-addon">
 									My Location
 								</span>
 								<div>
-									<input type="text" size="10" name="my_city_intl" class="form-control input-sm" ng-model="report.my_city_intl"/>
+									<input type="text" size="10" name="my_city_intl" class="form-control input-sm" ng-model="report.my_city_intl" sr-typeahead-history="my_city_intl"/>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-3">
+							<div class="input-group input-group-sm">
+								<span class="input-group-addon">
+									DE
+								</span>
+								<div>
+									<input type="text" size="10" name="station_callsign" class="form-control input-sm" ng-model="report.station_callsign" sr-force-uppercase sr-typeahead-history="station_callsign"/>
 								</div>
 							</div>
 						</div>

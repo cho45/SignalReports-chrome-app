@@ -81,8 +81,16 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
 }
 
 #entries {
+	table-layout: fixed;
+
+	td, th {
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
 	.callsign {
-		width: 7em;
+		width: 9em;
 	}
 
 	.frequency {
@@ -90,9 +98,14 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
 		width: 7em;
 	}
 
+	.band {
+		width: 4em;
+		text-align: right;
+	}
+
 	.mode {
 		text-align: center;
-		width: 3em;
+		width: 4em;
 	}
 
 	.datetime {
@@ -106,11 +119,17 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
 	}
 
 	.name {
-		width: 7em;
 	}
 
 	.address {
 		width: 10em;
+	}
+
+	.tx_power {
+		width: 4em;
+	}
+
+	.memo {
 	}
 }
 

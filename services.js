@@ -665,6 +665,7 @@ signalReportsApp.factory('Reports', function ($q, SignalReportDB) {
 				var val = this[key];
 				object[key] = val;
 			}
+			console.log(object);
 
 			return db.
 			then(function () {
@@ -714,7 +715,11 @@ signalReportsApp.factory('Reports', function ($q, SignalReportDB) {
 			then(function (result) {
 				Reports.hasMore = (result.length > 50);
 				for (var i = 0, it; (it = result[i]); i++) {
-					ret.push(new Reports(it));
+					var report = new Reports(it);
+					var date = report.qso_date.match(/^(\d\d\d\d)(\d\d)(\d\d)$/);
+					var time = report.time_on.match(/^(\d\d)(\d\d)(\d\d)?$/);
+					report.$date = new Date(Date.UTC(date[1], +date[2] - 1, date[3], time[1], time[2], time[3]));
+					ret.push(report);
 				}
 				if (callback) callback(ret);
 			});

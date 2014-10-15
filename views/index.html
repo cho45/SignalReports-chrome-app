@@ -68,39 +68,41 @@
 		</div>
 
 		<div class="main" style="padding: 0 0 30px 0">
-			<table class="table table-striped table-hover">
+			<table id="entries" class="table table-striped table-hover">
 				<thead>
 					<tr>
-						<th>Call sign</th>
-						<th>Band</th>
-						<th>Frequency</th>
-						<th>Mode</th>
-						<th>Date Time</th>
-						<th>UR RST</th>
-						<th>MY RST</th>
-						<th>Name</th>
-						<th>QTH</th>
-						<th>Memo</th>
-						<th class="location">Location</th>
+						<th class="callsign">Call sign</th>
+						<th class="band">Band</th>
+						<th class="frequency">Frequency</th>
+						<th class="mode">Mode</th>
+						<th class="datetime">Date Time</th>
+						<th class="rst">UR RST</th>
+						<th class="rst">MY RST</th>
+						<th class="address">QTH</th>
+						<th class="tx_power">PWR</th>
 						<th class="rig">Rig</th>
-						<th class="tx_power">TX Power</th>
+						<th class="name">Name</th>
+						<th class="memo">Memo</th>
+						<th class="location">Location</th>
+						<th class="call">DE</th>
 					</tr>
 				</thead>
-				<tbody id="entries">
+				<tbody>
 					<tr ng-repeat="report in reports | orderBy:orderProp:true" ng-click="openForm(report)" data-id="{{ report.id }}">
 						<td class="callsign">{{ report.call }}</td>
 						<td class="band">{{ report.band }}</td>
 						<td class="frequency">{{ report.freq | frequency }}</td>
 						<td class="mode"><span class="label label-{{ report.mode | lowercase }} ng-binding">{{ report.mode }}</span></td>
-						<td class="datetime"><time data-epoch="{{ report.datetime }}">{{ report.qso_date }} {{ report.time_on }}</time></td>
+						<td class="datetime"><time title="{{report.$date.getTime() | date: 'yyyy-MM-dd HH:mm:ss Z' }}" ng-bind="report.$date.getTime() | date: 'yyyy-MM-dd HH:mm'"></time></td>
 						<td class="rst">{{ report.rst_sent }}</td>
 						<td class="rst">{{ report.rst_rcvd }}</td>
-						<td class="name">{{ report.name_intl }}</td>
 						<td class="address">{{ report.qth_intl }}</td>
-						<td class="memo">{{ report.notes_intl }}</td>
-						<td class="location">{{ report.my_city_intl }}</td>
-						<td class="rig">{{ report.my_rig_intl }}</td>
-						<td class="tx_power">{{ report.tx_pwr }}</td>
+						<td class="tx_power">{{ report.tx_pwr }}W</td>
+						<td class="rig" title="{{ report.my_rig_intl }}">{{ report.my_rig_intl }}</td>
+						<td class="name">{{ report.name_intl }}</td>
+						<td class="memo" title="{{ report.notes_intl }}">{{ report.notes_intl }}</td>
+						<td class="location" title="{{ report.my_city_intl }}">{{ report.my_city_intl }}</td>
+						<td class="callsign" title="{{ report.station_callsign }}">{{ report.station_callsign }}</td>
 					</tr>
 				</tbody>
 			</table>

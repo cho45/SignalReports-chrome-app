@@ -1,0 +1,3 @@
+*.json
+.bundle
+vendor

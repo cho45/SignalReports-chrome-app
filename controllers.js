@@ -75,7 +75,9 @@ signalReportsApp.controller('SignalReportListCtrl', function ($scope, $q, $http,
 				freq : target.freq,
 				mode : target.mode,
 				my_rig_intl : target.my_rig_intl,
-				my_city_intl : target.my_city_intl
+				tx_pwr : target.tx_pwr,
+				my_city_intl : target.my_city_intl,
+				station_callsign : target.station_callsign
 			};
 		}
 

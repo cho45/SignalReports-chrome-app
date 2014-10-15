@@ -48,6 +48,9 @@ signalReportsApp.directive('srTypeaheadCallsign', function (SignalReportDB) {
 
 			element.focus(function () {
 				element.typeahead('val', element.val());
+			}).
+			on('typeahead:closed', function () {
+				element.change(); // to apply to ng-model
 			});
 		}
 	};
@@ -74,6 +77,9 @@ signalReportsApp.directive('srTypeaheadMode', function () {
 
 			element.focus(function () {
 				element.typeahead('val', element.val());
+			}).
+			on('typeahead:closed', function () {
+				element.change(); // to apply to ng-model
 			});
 		}
 	};
@@ -100,6 +106,45 @@ signalReportsApp.directive('srTypeaheadBand', function () {
 
 			element.focus(function () {
 				element.typeahead('val', element.val());
+			}).
+			on('typeahead:closed', function () {
+				element.change(); // to apply to ng-model
+			});
+		}
+	};
+});
+
+signalReportsApp.directive('srTypeaheadHistory', function (Reports) {
+	return {
+		link : function (scope, element, attrs) {
+			var name = attrs.srTypeaheadHistory;
+			element.typeahead({
+				hint: false,
+				highlight: false,
+				minLength: 1
+			}, {
+				name : 'history',
+				displayKey : function (i) {
+					return i[name];
+				},
+				source : function (q, cb) {
+					var re = new RegExp(q, 'i');
+					Reports.query({ limit: 100 }, function (data) {
+						var uniq = {};
+						cb(data.filter(function (i) {
+							var ret = !uniq[i[name]] && re.test(i[name]);
+							uniq[i[name]] = true;
+							return ret;
+						}));
+					});
+				}
+			});
+
+			element.focus(function () {
+				element.typeahead('val', element.val());
+			}).
+			on('typeahead:closed', function () {
+				element.change(); // to apply to ng-model
 			});
 		}
 	};
@@ -264,7 +309,7 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 								console.log('import', row);
 								var date = row.qso_date.match(/(\d\d\d\d)(\d\d)(\d\d)/);
 								var time = row.time_on.match(/(\d\d)(\d\d)(\d\d)?/);
-								row.datetime = new Date(+date[1], +date[2]-1, date[3], time[1], time[2], time[3] || 0).getTime();
+								row.datetime = Date.UTC(+date[1], +date[2]-1, date[3], time[1], time[2], time[3] || 0);
 								return SignalReportDB.insertReport(row).then(loop);
 							}).
 							then(function () {
@@ -362,7 +407,7 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports, SignalR
 
 			$scope.$watch('report.freq', function (newValue, oldValue) {
 				for (var i = 0, it; (it = signalReportsApp.BANDS[i]); i++) {
-					if (it.lowerFreq < newValue && newValue < it.upperFreq) {
+					if (it.lowerFreq <= newValue && newValue <= it.upperFreq) {
 						$scope.report.band = it.band;
 						break;
 					}
@@ -465,15 +510,17 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports, SignalR
 					}
 
 					if ($scope.report.qso_date) {
-						var date = $scope.report.qso_date.match(/^(\d\d\d\d)(\d\d)(\d\d)$/);
-						date.shift();
-						$scope.report.qso_date = date.join('-');
-					}
-
-					if ($scope.report.time_on) {
-						var time = $scope.report.time_on.match(/^(\d\d)(\d\d)(\d\d)?$/);
-						time.shift();
-						$scope.report.time_on = time.join(':');
+						var dateobj = $scope.report.$date;
+						$scope.report.qso_date = [
+							dateobj.getFullYear(),
+							String(100 + dateobj.getMonth() + 1).slice(1),
+							String(100 + dateobj.getDate()).slice(1)
+						].join('-');
+						$scope.report.time_on = [
+							String(100 + dateobj.getHours()).slice(1), 
+							String(100 + dateobj.getMinutes()).slice(1), 
+							String(100 + dateobj.getSeconds()).slice(1) 
+						].join(':');
 					}
 
 					$scope.isNew = !$scope.report.datetime;
@@ -574,18 +621,30 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports, SignalR
 				var date = $scope.report.qso_date.split(/-/);
 				var time = $scope.report.time_on.split(/:/);
 
-				$scope.report.datetime = new Date(
+				var dateobj = new Date(
 					+date[0],
 					+date[1] - 1,
 					+date[2],
 					+time[0],
 					+time[1],
 					+time[2]
-				).getTime();
+				);
+				$scope.report.datetime = dateobj.getTime();
 
-				$scope.report.qso_date = date.join('');
-				$scope.report.time_on = time.join('');
+				// convert local time to UTC
+				$scope.report.qso_date = [
+					dateobj.getUTCFullYear(),
+					String(100 + dateobj.getUTCMonth() + 1).slice(1),
+					String(100 + dateobj.getUTCDate()).slice(1)
+				].join('');
+				$scope.report.time_on = [
+					String(100 + dateobj.getUTCHours()).slice(1), 
+					String(100 + dateobj.getUTCMinutes()).slice(1), 
+					String(100 + dateobj.getUTCSeconds()).slice(1) 
+				].join('');
 				var report = new Reports($scope.report);
+				console.log(report);
+				report.$date = dateobj;
 
 				$q.when().
 				then(function () {
