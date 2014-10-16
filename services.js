@@ -111,11 +111,21 @@ signalReportsApp.factory('SignalReportDB', function ($rootScope, $q, temporarySt
 				request = store.openCursor(null, 'prev');
 			}
 
+			var searchRe = query.search ? new RegExp(query.search, 'i') : null;
 			request.onsuccess = function (e) {
 				var cursor = e.target.result;
 				if (cursor) {
 					if (!cursor.value._deleted) {
-						array.push(cursor.value);
+						var matched = true;
+						if (searchRe) {
+							matched =
+								searchRe.test(cursor.value.call) ||
+								searchRe.test(cursor.value.notes_intl) ||
+								searchRe.test(cursor.value.my_city_intl);
+						}
+
+						if (matched) array.push(cursor.value);
+
 						if (limit-- > 0) {
 							cursor.continue(); // no warnings
 						} else {
@@ -707,9 +717,7 @@ signalReportsApp.factory('Reports', function ($q, SignalReportDB) {
 	Reports.query = function (query, callback) {
 		var ret = [];
 		db.then(function () {
-			SignalReportDB.query({
-				before: query.before
-			}, {
+			SignalReportDB.query(query, {
 				limit : 51
 			}).
 			then(function (result) {

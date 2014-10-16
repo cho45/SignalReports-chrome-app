@@ -25,7 +25,7 @@ signalReportsApp.controller('SignalReportListCtrl', function ($scope, $q, $http,
 
 
 	$scope.load = function () {
-		$scope.reports = Reports.query({ query : $scope.query, limit: 50 }, function (data) {
+		$scope.reports = Reports.query({ search : $scope.query, limit: 50 }, function (data) {
 			$scope.hasMore = Reports.hasMore;
 		});
 
@@ -42,7 +42,7 @@ signalReportsApp.controller('SignalReportListCtrl', function ($scope, $q, $http,
 
 	$scope.loadNext = function () {
 		var before = $scope.reports[$scope.reports.length-1].datetime;
-		var reports = Reports.query({ query : $scope.query, before: before, limit: 50 }, function (data) {
+		var reports = Reports.query({ search : $scope.query, before: before, limit: 50 }, function (data) {
 			$scope.reports = $scope.reports.concat(reports);
 			$scope.hasMore = Reports.hasMore;
 		});
