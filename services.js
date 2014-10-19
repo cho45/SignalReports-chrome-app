@@ -124,9 +124,12 @@ signalReportsApp.factory('SignalReportDB', function ($rootScope, $q, temporarySt
 								searchRe.test(cursor.value.my_city_intl);
 						}
 
-						if (matched) array.push(cursor.value);
+						if (matched) {
+							array.push(cursor.value);
+							limit--;
+						}
 
-						if (limit-- > 0) {
+						if (limit > 0) {
 							cursor.continue(); // no warnings
 						} else {
 							ret.resolve(array);
