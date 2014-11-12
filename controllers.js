@@ -26,6 +26,7 @@ signalReportsApp.controller('SignalReportListCtrl', function ($scope, $q, $http,
 
 	$scope.load = function () {
 		$scope.reports = Reports.query({ search : $scope.query, limit: 50 }, function (data) {
+			console.log($scope.reports);
 			$scope.hasMore = Reports.hasMore;
 		});
 

@@ -90,7 +90,7 @@ describe('SignalReport', function () {
 
 	it("test", function () {
 		var total = element(by.css('.total'));
-		expect(total.getText()).toEqual('Total: 0');
+		expect(total.getText()).toEqual('トータル 0');
 
 		var app = new SignalReports();
 		app.openForm();
@@ -106,20 +106,26 @@ describe('SignalReport', function () {
 		expect($('#input-form').getAttribute('class')).toMatch(/mode-cw/);
 
 		app.inputs.my_rig_intl.sendKeys('FT-450D');
-		app.inputs.tx_pwr.sendKeys('50W');
+		app.inputs.tx_pwr.sendKeys('50');
 
 		app.inputs.call.sendKeys('foobar\t');
 		expect(app.inputs.call.getAttribute('value')).toBe('FOOBAR');
 
 		app.inputs.rst_sent.sendKeys('599\t');
+		app.inputs.rst_rcvd.sendKeys('579\t');
+		// fill datetime automatically
 		expect(app.inputs.qso_date.getAttribute('value')).toMatch(/^\d\d\d\d-\d\d-\d\d$/);
 		expect(app.inputs.time_on.getAttribute('value')).toMatch(/^\d\d:\d\d:\d\d$/);
 
-		app.inputs.rst_rcvd.sendKeys('579');
+		// re-input
+		app.inputs.qso_date.sendKeys('2014\t0101');
+		app.inputs.time_on.sendKeys('120100');
+
 		app.inputs.name_intl.sendKeys('太郎');
 		app.inputs.qth_intl.sendKeys('京都市');
 		app.inputs.notes_intl.sendKeys('ノート');
 		app.submitForm();
+		// browser.driver.sleep(3000);
 
 		// reopen dialog
 		expect($('#input-form').isDisplayed()).toBe(true);
@@ -128,6 +134,7 @@ describe('SignalReport', function () {
 		app.closeForm();
 		expect($('#input-form').isDisplayed()).toBe(false);
 
+
 		// check list
 		expect(element.all(by.repeater('report in reports')).count()).toBe(1);
 		var row = by.repeater('report in reports').row(0);
@@ -135,7 +142,10 @@ describe('SignalReport', function () {
 		expect(element(row.column('mode')).getText()).toEqual('CW');
 		expect(element(row.column('my_rig_intl')).getText()).toEqual('FT-450D');
 		expect(element(row.column('tx_pwr')).getText()).toEqual('50W');
-		// expect(element(row.column('datetime')).getText()).toMatch(/\d\d\d\d-\d\d\d\d \d\d:\d\d:\d\d/);
+		// show in same timezone
+		// XXX: Chrome does not support chaging timezone in temporary. So we can't test depending time-zone.
+		// I want to test saved tz as UTC but I cannot do it.
+		expect(element(row).element(by.css('.datetime')).getText()).toMatch(/2014-01-01 12:01/);
 		expect(element(row.column('rst_sent')).getText()).toEqual('599');
 		expect(element(row.column('rst_rcvd')).getText()).toEqual('579');
 		expect(element(row.column('name_intl')).getText()).toEqual('太郎');
@@ -149,8 +159,6 @@ describe('SignalReport', function () {
 		app.inputs.notes_intl.clear();
 		app.inputs.notes_intl.sendKeys('ノート書き変え');
 		app.submitForm();
-
-		browser.driver.sleep(3000);
 
 		// check list
 		expect(element.all(by.repeater('report in reports')).count()).toBe(1);

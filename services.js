@@ -669,6 +669,12 @@ signalReportsApp.factory('Reports', function ($q, SignalReportDB) {
 			for (var key in columns) if (columns.hasOwnProperty(key) && !/\$/.test(key)) {
 				this[key] = columns[key];
 			}
+			if (this.qso_date && this.time_on) {
+				var date = this.qso_date.match(/^(\d\d\d\d)(\d\d)(\d\d)$/);
+				var time = this.time_on.match(/^(\d\d)(\d\d)(\d\d)?$/);
+				console.log([this.qso_date, this.time_on]);
+				this.$date = new Date(Date.UTC(date[1], +date[2] - 1, date[3], time[1], time[2], time[3] || 0));
+			}
 		},
 
 		$save : function (callback) {
@@ -727,9 +733,6 @@ signalReportsApp.factory('Reports', function ($q, SignalReportDB) {
 				Reports.hasMore = (result.length > 50);
 				for (var i = 0, it; (it = result[i]); i++) {
 					var report = new Reports(it);
-					var date = report.qso_date.match(/^(\d\d\d\d)(\d\d)(\d\d)$/);
-					var time = report.time_on.match(/^(\d\d)(\d\d)(\d\d)?$/);
-					report.$date = new Date(Date.UTC(date[1], +date[2] - 1, date[3], time[1], time[2], time[3]));
 					ret.push(report);
 				}
 				if (callback) callback(ret);

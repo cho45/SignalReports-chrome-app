@@ -291,7 +291,7 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 				var accepts = [
 					{
 						description : 'ADIF 2.0',
-						extensions  : ['adi']
+						extensions  : ['adi', 'txt']
 					}
 				];
 				chrome.fileSystem.chooseEntry({ type: 'openFile', accepts : accepts }, function (readOnlyEntry) {
@@ -309,8 +309,10 @@ signalReportsApp.directive('srSetting', function (SignalReportDB, temporaryStora
 								console.log('import', row);
 								var date = row.qso_date.match(/(\d\d\d\d)(\d\d)(\d\d)/);
 								var time = row.time_on.match(/(\d\d)(\d\d)(\d\d)?/);
+								row.call = row.call.toUpperCase();
 								row.datetime = Date.UTC(+date[1], +date[2]-1, date[3], time[1], time[2], time[3] || 0);
-								return SignalReportDB.insertReport(row).then(loop);
+								row._deleted = 0;
+								return SignalReportDB.updateReport(row).then(loop);
 							}).
 							then(function () {
 								$scope.$parent.load();
@@ -454,7 +456,7 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports, SignalR
 				end().
 				find('input[name=rst_rcvd]').
 					blur(function () {
-						if ($(this).val() && !inputFormForm.find('input[name=time]').val()) {
+						if ($(this).val() && !inputFormForm.find('input[name=time_on]').val()) {
 							$('#now').click();
 						}
 					}).
@@ -524,6 +526,7 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports, SignalR
 					}
 
 					$scope.isNew = !$scope.report.datetime;
+					$scope.original = new Reports(report);
 					$scope.opts = opts;
 					$scope.formChanged = false;
 					$scope.opened = true;
@@ -600,8 +603,7 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports, SignalR
 					}
 				}).
 				then(function () {
-					var report = new Reports($scope.report);
-					report.$delete(function () {
+					$scope.original.$delete(function () {
 						$scope.close();
 						$scope.deferred.resolve({
 							report : null,
@@ -627,7 +629,7 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports, SignalR
 					+date[2],
 					+time[0],
 					+time[1],
-					+time[2]
+					+time[2] || 0
 				);
 				$scope.report.datetime = dateobj.getTime();
 
@@ -662,7 +664,14 @@ signalReportsApp.directive('srEditDialog', function ($document, Reports, SignalR
 
 						return trySave();
 					} else {
-						return report.$update();
+						if (report.datetime != $scope.original.datetime) {
+							console.log('updated datetime',report.datetime, $scope.original.datetime);
+							return $scope.original.$delete(function () {
+								return report.$update();
+							});
+						} else {
+							return report.$update();
+						}
 					}
 				}).
 				then(function () {
